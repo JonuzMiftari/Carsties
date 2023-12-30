@@ -15,9 +15,9 @@ namespace SearchService.Controllers
         {
             var query = DB.PagedSearch<Item, Item>();
 
-            if (!string.IsNullOrEmpty(searchParams.SearchTerms))
+            if (!string.IsNullOrEmpty(searchParams.SearchTerm))
             {
-                query.Match(Search.Full, searchParams.SearchTerms).SortByTextScore();
+                query.Match(Search.Full, searchParams.SearchTerm).SortByTextScore();
             }
 
             query = searchParams.OrderBy switch
