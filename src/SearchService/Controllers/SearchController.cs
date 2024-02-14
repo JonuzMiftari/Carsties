@@ -11,7 +11,7 @@ namespace SearchService.Controllers
     public class SearchController : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<List<Item>>> SearchItems([FromQuery]SearchParams searchParams)
+        public async Task<ActionResult<List<Item>>> SearchItems([FromQuery] SearchParams searchParams)
         {
             var query = DB.PagedSearch<Item, Item>();
 
@@ -22,17 +22,28 @@ namespace SearchService.Controllers
 
             query = searchParams.OrderBy switch
             {
-                "make" => query.Sort(x => x.Ascending(a => a.Make)),
+                "make" => query.Sort(x => x.Ascending(a => a.Make))
+                    .Sort(x => x.Ascending(a => a.Model)),
                 "new" => query.Sort(x => x.Descending(a => a.CreatedAt)),
                 _ => query.Sort(x => x.Ascending(a => a.AuctionEnd))
             };
 
-            query = searchParams.OrderBy switch
+            query = searchParams.FilterBy switch
             {
                 "finished" => query.Match(x => x.AuctionEnd < DateTime.UtcNow),
-                "endingSoon" => query.Match(x => x.AuctionEnd < DateTime.UtcNow.AddHours(6) && x.AuctionEnd > DateTime.UtcNow),
+                "endingSoon" => query.Match(x => x.AuctionEnd < DateTime.UtcNow.AddHours(6)
+                    && x.AuctionEnd > DateTime.UtcNow),
                 _ => query.Match(x => x.AuctionEnd > DateTime.UtcNow)
             };
+
+
+            // TODO: endingSoon does not work, replaced witht he code above 
+            // query = searchParams.OrderBy switch
+            // {
+            //     "finished" => query.Match(x => x.AuctionEnd < DateTime.UtcNow),
+            //     "endingSoon" => query.Match(x => x.AuctionEnd < DateTime.UtcNow.AddHours(6) && x.AuctionEnd > DateTime.UtcNow),
+            //     _ => query.Match(x => x.AuctionEnd > DateTime.UtcNow)
+            // };
 
             if (!string.IsNullOrEmpty(searchParams.Seller))
             {
