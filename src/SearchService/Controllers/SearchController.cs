@@ -36,15 +36,6 @@ namespace SearchService.Controllers
                 _ => query.Match(x => x.AuctionEnd > DateTime.UtcNow)
             };
 
-
-            // TODO: endingSoon does not work, replaced witht he code above 
-            // query = searchParams.OrderBy switch
-            // {
-            //     "finished" => query.Match(x => x.AuctionEnd < DateTime.UtcNow),
-            //     "endingSoon" => query.Match(x => x.AuctionEnd < DateTime.UtcNow.AddHours(6) && x.AuctionEnd > DateTime.UtcNow),
-            //     _ => query.Match(x => x.AuctionEnd > DateTime.UtcNow)
-            // };
-
             if (!string.IsNullOrEmpty(searchParams.Seller))
             {
                 query.Match(x => x.Seller == searchParams.Seller);
